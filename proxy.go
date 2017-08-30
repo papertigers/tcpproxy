@@ -1,9 +1,10 @@
 package proxy
 
 import (
-	//"bytes"
+	"fmt"
 	"io"
 	"log"
+	"math"
 	"net"
 	"sync"
 )
@@ -16,6 +17,18 @@ import (
 
 // Maximum TCP size (64K)
 const bufferSize = 0xffff
+
+func prettyBytes(b uint64) string {
+	var unit uint64 = 1024
+	pre := [...]string{"k", "M", "G", "T", "P", "E"}
+	if b < unit {
+		return fmt.Sprintf("%v B", b)
+	}
+	exp := int(math.Log(float64(b)) / math.Log(float64(unit)))
+	prefix := pre[exp-1]
+	bytes := float64(b) / math.Pow(float64(unit), float64(exp))
+	return fmt.Sprintf("%.1f %sB", bytes, prefix)
+}
 
 // Proxy
 type Proxy struct {
@@ -62,8 +75,9 @@ func (p *Proxy) Start() {
 	// Block until one side of the connection closes/errors
 	<-p.done
 	//XXX Log connection stats
-	log.Printf("Connection closed (%s -> %s) sent: %d received: %d\n",
-		p.rconn.LocalAddr(), p.raddr, p.sentBytes, p.receivedBytes)
+	log.Printf("Connection closed (%s -> %s) sent: %s received: %s\n",
+		p.rconn.LocalAddr(), p.raddr, prettyBytes(p.sentBytes),
+		prettyBytes(p.receivedBytes))
 }
 
 // err is called when either lconn or rconn produce an error on read/write
