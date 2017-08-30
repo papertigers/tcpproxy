@@ -39,6 +39,7 @@ func main() {
 			continue
 		}
 
+		log.Printf("New connection from: %s\n", conn.RemoteAddr())
 		p := proxy.New(conn, laddr, raddr)
 		go p.Start()
 	}

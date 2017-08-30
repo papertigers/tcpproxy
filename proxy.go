@@ -76,7 +76,7 @@ func (p *Proxy) Start() {
 	<-p.done
 	//XXX Log connection stats
 	log.Printf("Connection closed (%s -> %s) sent: %s received: %s\n",
-		p.rconn.LocalAddr(), p.raddr, prettyBytes(p.sentBytes),
+		p.lconn.RemoteAddr(), p.raddr, prettyBytes(p.sentBytes),
 		prettyBytes(p.receivedBytes))
 }
 
