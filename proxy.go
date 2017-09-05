@@ -63,7 +63,8 @@ func (p *Proxy) Start() {
 	var err error
 	p.rconn, err = net.DialTCP("tcp", nil, p.raddr)
 	if err != nil {
-		//log the error
+		log.Printf("Connection failed: %s\n", err)
+		p.stats()
 		return
 	}
 	defer p.rconn.Close()
@@ -74,10 +75,15 @@ func (p *Proxy) Start() {
 
 	// Block until one side of the connection closes/errors
 	<-p.done
-	//XXX Log connection stats
-	log.Printf("Connection closed (%s -> %s) sent: %s received: %s\n",
+	p.stats()
+}
+
+// stats is called when the connection closes and logs some info
+func (p *Proxy) stats() {
+	log.Printf("Proxy connection closed (%s -> %s) sent: %s received: %s\n",
 		p.lconn.RemoteAddr(), p.raddr, prettyBytes(p.sentBytes),
 		prettyBytes(p.receivedBytes))
+
 }
 
 // err is called when either lconn or rconn produce an error on read/write
