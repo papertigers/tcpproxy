@@ -40,7 +40,7 @@ func main() {
 		}
 
 		log.Printf("New connection from: %s\n", conn.RemoteAddr())
-		p := proxy.New(conn, laddr, raddr)
+		p := proxy.New(conn, raddr)
 		go p.Start()
 	}
 }

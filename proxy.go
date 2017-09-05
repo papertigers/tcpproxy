@@ -34,7 +34,7 @@ func prettyBytes(b uint64) string {
 type Proxy struct {
 	sentBytes     uint64
 	receivedBytes uint64
-	laddr, raddr  *net.TCPAddr
+	raddr         *net.TCPAddr
 	lconn, rconn  *net.TCPConn
 	mux           sync.Mutex //protect erred
 	erred         bool
@@ -42,10 +42,9 @@ type Proxy struct {
 }
 
 // New creates a new Proxy instance
-func New(lconn *net.TCPConn, laddr, raddr *net.TCPAddr) *Proxy {
+func New(lconn *net.TCPConn, raddr *net.TCPAddr) *Proxy {
 	return &Proxy{
 		lconn: lconn,
-		laddr: laddr,
 		raddr: raddr,
 		erred: false,
 		done:  make(chan bool),
